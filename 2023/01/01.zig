@@ -13,6 +13,7 @@ test "solution 1" {
     const file_size = try file.getEndPos();
     const allocator = std.heap.page_allocator;
     const file_buffer = try allocator.alloc(u8, file_size);
+    defer allocator.free(file_buffer);
 
     _ = try file.readAll(file_buffer);
 
@@ -51,6 +52,7 @@ test "solution 2" {
     const file_size = try file.getEndPos();
     const allocator = std.heap.page_allocator;
     const file_buffer = try allocator.alloc(u8, file_size);
+    defer allocator.free(file_buffer);
 
     _ = try file.readAll(file_buffer);
 
