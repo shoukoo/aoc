@@ -18,7 +18,7 @@ test "solution 1" {
     _ = try file.readAll(file_buffer);
 
     var i = std.mem.splitAny(u8, file_buffer, "\n");
-    // var total: u16 = 0;
+    var total: u16 = 0;
 
     while (i.next()) |line| {
         std.debug.print("line {s}\n", .{line});
@@ -27,17 +27,36 @@ test "solution 1" {
             // use index of the colon to get the Game number
             const space_sep = std.mem.indexOf(u8, line[0..value], " ").?;
             const game_no_str = line[space_sep + 1 .. value];
-            const game_no = try std.fmt.parseInt(u8, game_no_str, 2);
-            std.debug.print("Game {d}\n", .{game_no});
+            const game_id = try std.fmt.parseInt(u8, game_no_str, 10);
+            std.debug.print("Game {d}\n", .{game_id});
             // value + 2 is to skip the colon and a space
             std.debug.print("{s:*^100}\n", .{line[value + 2 ..]});
-            var token = std.mem.tokenizeSequence(u8, line[value + 2 ..], "; ");
+            var sets = std.mem.tokenizeSequence(u8, line[value + 2 ..], "; ");
+            var valid_game: bool = true;
 
-            while (token.next()) |t| {
-                std.debug.print("{s}\n", .{t});
+            while (sets.next()) |s| {
+                var Color = Cube{};
+                var colors = std.mem.tokenizeSequence(u8, s, ", ");
+                while (colors.next()) |c| {
+                    var data = std.mem.tokenizeAny(u8, c, " ");
+                    const count = try std.fmt.parseInt(usize, data.next().?, 10);
+                    const color = data.next().?;
+                    if (std.mem.eql(u8, color, "green")) Color.green = count;
+                    if (std.mem.eql(u8, color, "red")) Color.red = count;
+                    if (std.mem.eql(u8, color, "blue")) Color.blue = count;
+                    std.debug.print("count {}\n", .{Color});
+                }
+                if (Color.red > 12 or Color.green > 13 or Color.blue > 14) {
+                    valid_game = false;
+                    break;
+                }
             }
 
-            break;
+            if (valid_game) {
+                total += game_id;
+            }
         }
     }
+
+    std.debug.print("total {}\n", .{total});
 }
