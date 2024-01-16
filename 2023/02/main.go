@@ -20,6 +20,11 @@ func main() {
 		slog.Error("solution 1", err)
 	}
 
+	err = solution2()
+	if err != nil {
+		slog.Error("solution 2", err)
+	}
+
 }
 
 func solution1() error {
@@ -82,7 +87,65 @@ func solution1() error {
 
 	}
 
-	fmt.Printf("total solution 1 %v", total)
+	fmt.Printf("total solution 1 %v\n", total)
+
+	return nil
+}
+
+func solution2() error {
+	b, err := os.ReadFile("input2.txt")
+	if err != nil {
+		return err
+	}
+
+	strs := strings.Split(string(b), "\n")
+	var total int64
+
+	for _, v := range strs {
+
+		if v == "" {
+			continue
+		}
+
+		data := strings.Split(v, ":")
+
+		sets := strings.Split(data[1], ";")
+		var cube = Cube{}
+
+		for _, s := range sets {
+			colorInfo := strings.Split(s, ",")
+			for _, color := range colorInfo {
+				info := strings.Split(strings.Trim(color, " "), " ")
+				count, err := strconv.ParseInt(info[0], 10, 8)
+				if err != nil {
+					return err
+				}
+				name := info[1]
+
+				switch name {
+				case "red":
+					if count > cube.red {
+						cube.red = count
+					}
+				case "green":
+					if count > cube.green {
+						cube.green = count
+					}
+				case "blue":
+					if count > cube.blue {
+						cube.blue = count
+					}
+				}
+
+			}
+
+		}
+
+		total += (cube.red * cube.blue * cube.green)
+
+	}
+
+	fmt.Printf("total solution 2 %v\n", total)
 
 	return nil
 }
